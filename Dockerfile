@@ -1,4 +1,4 @@
-# docker build -t aiagent:aiagent -f AIAgentDockerfile .
+# docker build -t aiagent:aiagent -f Dockerfile .
 
 FROM python:3.9
 

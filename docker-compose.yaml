@@ -1,7 +1,7 @@
 version: '3'
 services:
   ai:
-    image: "aiagent:aiagent"
+    image: "formartha/ai1899:latest"
     ports:
       - "5000:5000"
     networks:
@@ -51,7 +51,7 @@ services:
       - int_network
 
   celery-worker:
-    image: "aiagent:aiagent"  # Use the same image as ai service, assuming it has Celery installed
+    image: "formartha/ai1899:latest"  # Use the same image as ai service, assuming it has Celery installed
     networks:
       - int_network
     depends_on:
