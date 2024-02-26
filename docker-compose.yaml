@@ -1,0 +1,68 @@
+version: '3'
+services:
+  ai:
+    image: "aiagent:aiagent"
+    ports:
+      - "5000:5000"
+    networks:
+      - int_network
+    depends_on:
+      - qdrant-container
+      - redis
+    environment:
+      - QDRANT=qdrant-container
+      - QDRANTPORT=6333
+      - SENTENCE_TRANSFORMERS_HOME=/ai/.model/
+      - REDDIS_CELERY=redis://redis:6379/0
+    deploy:
+      resources:
+        limits:
+          cpus: "4"
+          memory: 4G
+    command: python3 server.py
+
+  qdrant-container:
+    image: "ghcr.io/qdrant/qdrant/qdrant:v1.7.3-unprivileged"
+    networks:
+      - int_network
+    ports:
+      - "6333:6333"
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 2G
+
+  redis:
+    hostname: "redis"
+    image: "redis:latest"
+    ports:
+      - "6379:6379"
+    networks:
+      - int_network
+
+  redis-commander:
+    image: "rediscommander/redis-commander:latest"
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    ports:
+      - "8081:8081"
+    networks:
+      - int_network
+
+  celery-worker:
+    image: "aiagent:aiagent"  # Use the same image as ai service, assuming it has Celery installed
+    networks:
+      - int_network
+    depends_on:
+      - ai
+    environment:
+      - QDRANT=qdrant-container
+      - QDRANTPORT=6333
+      - SENTENCE_TRANSFORMERS_HOME=/ai/.model/
+      - REDDIS_CELERY=redis://redis:6379/0
+    command: celery --app=tasks worker --loglevel=INFO --pool=solo
+
+networks:
+  int_network:
+    driver: bridge

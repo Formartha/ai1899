@@ -1,0 +1,7 @@
+pandas==2.1.4
+sentence_transformers==2.2.2
+numpy==1.26.2
+flask[async]==3.0.0
+qdrant-client==1.7.0
+celery==5.3.6
+redis==5.0.1
