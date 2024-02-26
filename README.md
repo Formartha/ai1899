@@ -5,7 +5,12 @@ The idea is to have a test and it's description and test steps, then a system or
 
 How to run?
 ----------
-docker-compose up -d
+to improve performance and reduce footprint, the idea is to have the model loaded on a shared volume using:
+download_model.py. After running it, please provide proper path to the docker-compose.yaml file.
+
+To start the stack
+--------------------
+DEVICE=/path/to/downloaded/model LM_MODEL=model-name docker compose up -d
 
 Troubleshoot
 ------------

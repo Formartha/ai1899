@@ -5,7 +5,6 @@ import json
 from qdrant_client.models import PointStruct, Distance, VectorParams
 from qdrant_client.http import models
 
-from autox_module import AutoXTestEngine
 from lm_module import client, model
 
 ai_api = Blueprint('ai', __name__)
@@ -208,39 +207,4 @@ def delete_item():
     )
 
     return jsonify({"status": "OK"}), 200
-
-
-@ai_api.route("/autox", methods=["POST"])
-def autox():
-    options = {
-        "improve-test-desc: used to improve test description based on a test file which can be loaded to the system."
-    }
-
-    query = request.args.get('module')
-
-    if query:
-
-        if 'file' in request.files:  # to support uploading a file
-            file = request.files['file']
-
-            # Check if the file has a name
-            if file.filename == '':
-                return jsonify({'error': 'No selected file'})
-            else:
-                payload = str(file.read())
-        else:
-            payload = request.data.get("text")  # to support parse a text
-
-        if query == "improve-test-desc":
-            c = AutoXTestEngine()
-            resp = c.improve_test_description(payload)
-            return jsonify({"resp": resp}), 200
-
-        if query == "results-helper":
-            c = AutoXTestEngine()
-            resp = c.results_helper(payload)
-            return jsonify({"resp": resp}), 200
-
-    else:
-        return jsonify({f"options are only": options}), 400
 

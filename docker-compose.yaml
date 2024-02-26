@@ -3,22 +3,25 @@ services:
   ai:
     image: "formartha/ai1899:latest"
     ports:
-      - "5000:5000"
+      - "5555:5555"
     networks:
       - int_network
     depends_on:
       - qdrant-container
       - redis
+    volumes:
+      - model-volume:/lm-model-home
     environment:
+      - SENTENCE_TRANSFORMERS_HOME=/lm-model-home
+      - LM_MODEL=${LM_MODEL}
       - QDRANT=qdrant-container
       - QDRANTPORT=6333
-      - SENTENCE_TRANSFORMERS_HOME=/ai/.model/
       - REDDIS_CELERY=redis://redis:6379/0
     deploy:
       resources:
         limits:
-          cpus: "4"
-          memory: 4G
+          cpus: "1" # recommended 4
+          memory: 1G # recommended 4
     command: python3 server.py
 
   qdrant-container:
@@ -30,8 +33,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "2"
-          memory: 2G
+          cpus: "1" # recommended 2
+          memory: 1G # recommended 2
 
   redis:
     hostname: "redis"
@@ -56,13 +59,24 @@ services:
       - int_network
     depends_on:
       - ai
+    volumes:
+      - model-volume:/lm-model-home
     environment:
+      - SENTENCE_TRANSFORMERS_HOME=/lm-model-home
+      - LM_MODEL=${LM_MODEL}
       - QDRANT=qdrant-container
       - QDRANTPORT=6333
-      - SENTENCE_TRANSFORMERS_HOME=/ai/.model/
       - REDDIS_CELERY=redis://redis:6379/0
     command: celery --app=tasks worker --loglevel=INFO --pool=solo
 
 networks:
   int_network:
     driver: bridge
+
+volumes:
+  model-volume:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${DEVICE} # /path/to/your/model
+      o: bind
