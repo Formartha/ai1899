@@ -6,6 +6,7 @@ from qdrant_client.models import PointStruct, Distance, VectorParams
 from qdrant_client.http import models
 
 from lm_module import client, model
+from tasks import upsert_collection
 
 ai_api = Blueprint('ai', __name__)
 
@@ -149,7 +150,6 @@ async def upsert_collection():
                                                size=768,
                                                distance=Distance.COSINE))
 
-            from tasks import upsert_collection
             resp = upsert_collection.delay(json_data, collection, slices=50)
 
             return {"id": resp.task_id}
