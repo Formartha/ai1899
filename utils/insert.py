@@ -11,14 +11,14 @@ import os
 from ai1899.env import Env
 
 
-client = QdrantClient(host=Env.qdrant_host, port=Env.qdrant_port)
+client = QdrantClient(host=Env.QDRANT, port=Env.QDRANTPORT)
 client.recreate_collection(collection_name="srm",
                            vectors_config=VectorParams(
                                size=768,
                                distance=Distance.COSINE))
 
 
-with open(os.path.join(os.path.dirname(__file__), "examples", "collection_a_example.json")) as f:
+with open(os.path.join(os.path.dirname(__file__), "../ai1899/examples", "collection_a_example.json")) as f:
     data = json.load(f)
     df = pd.DataFrame([{"file_name": k, "_id": str(uuid.uuid4()), "text": "TEST: {}; DESCRIPTION: {}".format(k.replace('_', ' '), v)} for k, v in data.items()])
     # df.to_csv("tests.csv")

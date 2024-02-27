@@ -11,10 +11,3 @@ RUN pip3 install -r requirements.txt
 EXPOSE 5000
 
 COPY ai1899/ .
-
-# -- downloading LM model -- #
-#ENV SENTENCE_TRANSFORMERS_HOME=/ai/.model/
-#RUN python3 download_model.py
-
-# -- starting program -- #
-#CMD ["python3", "server.py"]

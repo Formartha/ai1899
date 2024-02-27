@@ -1,0 +1,22 @@
+# Python specific
+*.pyc
+
+# Cache directories
+__pycache__/
+.cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# PyCharm/IntelliJ IDE files
+.idea/
+*.iml
+*.ipr
+*.iws
+*.jar
+
+# tmp
+tmp/
