@@ -1,0 +1,3 @@
+# To reduce footprint of the ai container, utils requirments.txt file can be used in addition, if needed.
+pandas==2.1.4
+numpy==1.26.2
