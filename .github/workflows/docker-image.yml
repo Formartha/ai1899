@@ -1,0 +1,33 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Get Git commit SHA
+      id: git_sha
+      run: echo "::set-output name=sha::$(git rev-parse --short HEAD)"
+
+    - name: Build the Docker image
+      run: |
+        docker build . --file Dockerfile --tag formartha/ai1899:${{ steps.git_sha.outputs.sha }}
+
+    - name: Log into Docker Hub
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+    - name: Push Docker image to Docker Hub
+      run: |
+        docker tag formartha/ai1899:${{ steps.git_sha.outputs.sha }} formartha/ai1899:latest
+        docker push formartha/ai1899:latest
