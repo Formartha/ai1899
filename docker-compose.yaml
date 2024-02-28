@@ -12,6 +12,7 @@ services:
     volumes:
       - model-volume:/lm-model-home
     environment:
+      - FLASK_PORT=5555
       - SENTENCE_TRANSFORMERS_HOME=/lm-model-home
       - LM_MODEL=${LM_MODEL}
       - QDRANT=qdrant-container
@@ -20,12 +21,12 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "1" # recommended 4
-          memory: 1G # recommended 4
+          cpus: "0.5" # Recommended: 4 CPUs
+          memory: 500M # Recommended: 4GB RAM
     command: python3 server.py
 
   qdrant-container:
-    image: "ghcr.io/qdrant/qdrant/qdrant:v1.7.3-unprivileged"
+    image: "ghcr.io/qdrant/qdrant/qdrant:v1.7.4"
     networks:
       - int_network
     ports:
@@ -33,16 +34,21 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "1" # recommended 2
-          memory: 1G # recommended 2
+          cpus: "0.5" # Recommended: 2 CPUs
+          memory: 500M # Recommended: 2GB RAM
 
   redis:
     hostname: "redis"
-    image: "redis:latest"
+    image: "redis:7.2.4-alpine"
     ports:
       - "6379:6379"
     networks:
       - int_network
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5" # Recommended: 4 CPUs
+          memory: 500M # Recommended: 4GB RAM
 
   redis-commander:
     image: "rediscommander/redis-commander:latest"
@@ -52,6 +58,11 @@ services:
       - "8081:8081"
     networks:
       - int_network
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5" # Recommended: 4 CPUs
+          memory: 500M # Recommended: 4GB RAM
 
   celery-worker:
     image: "formartha/ai1899:latest"  # Use the same image as ai service, assuming it has Celery installed
@@ -67,6 +78,11 @@ services:
       - QDRANT=qdrant-container
       - QDRANTPORT=6333
       - REDDIS_CELERY=redis://redis:6379/0
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5" # Recommended: 4 CPUs
+          memory: 500M # Recommended: 4GB RAM
     command: celery --app=tasks worker --loglevel=INFO --pool=solo
 
 networks:
