@@ -1,0 +1,134 @@
+version: '3.7'
+
+services:
+  traefik:
+    image: "traefik:v2.5"
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080"  # Traefik dashboard
+    networks:
+      - int_network
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+  ai:
+    image: "formartha/ai1899:latest"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ai.rule=PathPrefix(`/ai-agent`)"
+      - "traefik.http.services.ai.loadbalancer.server.port=5555"
+    networks:
+      - int_network
+    depends_on:
+      - qdrant-container
+      - redis
+    volumes:
+      - model-volume:/lm-model-home
+    environment:
+      - FLASK_PORT=5555
+      - SENTENCE_TRANSFORMERS_HOME=/lm-model-home
+      - LM_MODEL=${LM_MODEL}
+      - QDRANT=qdrant-container
+      - QDRANTPORT=6333
+      - REDDIS_CELERY=redis://redis:6379/0
+    deploy:
+      placement:
+        constraints: []
+      replicas: 1
+      resources:
+        limits:
+          cpus: "1" # Recommended: 4 CPUs
+          memory: 1GB # Recommended: 4GB RAM
+    command: python3 server.py
+
+  celery-worker:
+    image: "formartha/ai1899:latest"  # Use the same image as ai service, assuming it has Celery installed
+    networks:
+      - int_network
+    depends_on:
+      - ai
+    volumes:
+      - model-volume:/lm-model-home
+    environment:
+      - SENTENCE_TRANSFORMERS_HOME=/lm-model-home
+      - LM_MODEL=${LM_MODEL}
+      - QDRANT=qdrant-container
+      - QDRANTPORT=6333
+      - REDDIS_CELERY=redis://redis:6379/0
+    deploy:
+      placement:
+        constraints: []
+      replicas: 1
+      resources:
+        limits:
+          cpus: "0.5" # Recommended: 4 CPUs
+          memory: 500M # Recommended: 4GB RAM
+    command: celery --app=tasks worker --loglevel=INFO --pool=solo
+
+  qdrant-container:
+    image: "ghcr.io/qdrant/qdrant/qdrant:v1.7.4"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.qdrant.rule=PathPrefix(`/qdrant`)"
+      - "traefik.http.services.qdrant.loadbalancer.server.port=6333"
+    networks:
+      - int_network
+    deploy:
+      placement:
+        constraints: []
+      replicas: 1
+      resources:
+        limits:
+          cpus: "0.5" # Recommended: 2 CPUs
+          memory: 500M # Recommended: 2GB RAM
+
+  redis:
+    hostname: "redis"
+    image: "redis:7.2.4-alpine"
+    networks:
+      - int_network
+    deploy:
+      placement:
+        constraints: []
+      replicas: 1
+      resources:
+        limits:
+          cpus: "0.5" # Recommended: 4 CPUs
+          memory: 500M # Recommended: 4GB RAM
+
+  redis-commander:
+    image: "rediscommander/redis-commander:latest"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.redis.rule=PathPrefix(`/redis`)"
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    ports:
+      - "8081:8081"
+    networks:
+      - int_network
+    deploy:
+      placement:
+        constraints: []
+      replicas: 1
+      resources:
+        limits:
+          cpus: "0.5" # Recommended: 4 CPUs
+          memory: 500M # Recommended: 4GB RAM
+
+networks:
+  int_network:
+    driver: overlay
+    attachable: true
+
+volumes:
+  model-volume:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${DEVICE} # /path/to/your/model
+      o: bind

@@ -21,8 +21,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.5" # Recommended: 4 CPUs
-          memory: 500M # Recommended: 4GB RAM
+          cpus: "1" # Recommended: 4 CPUs
+          memory: 1GB # Recommended: 4GB RAM
     command: python3 server.py
 
   qdrant-container:
