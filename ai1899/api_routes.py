@@ -40,10 +40,10 @@ def query():
 
     result = sorted(data, key=lambda data: data.score, reverse=True)[:limit]
 
-    return {
+    return jsonify({
             "hits": [hit.payload['file_name'] for hit in result],
             "score": [hit.score for hit in result]
-    }
+    }), 200
 
 
 @ai_api.route("/most_similar_by_id", methods=["POST"])
@@ -59,19 +59,19 @@ def most_similar_by_id():
             with_vectors=True
         )
     if not result:
-        return {
+        return jsonify({
             "status": "not found"
-        }
+        }), 404
         
     hits = client.search(
         collection_name=collection,
         query_vector=result[0].vector,
         limit=limit)
 
-    return {
+    return jsonify({
             "hits": [hit.payload['file_name'] for hit in hits],
             "score": [hit.score for hit in hits],
-    }
+    }), 200
 
 
 @ai_api.route("/most_similar_by_name", methods=["POST"])
@@ -94,19 +94,17 @@ def most_similar_by_name():
     )
 
     if not result:
-        return {
-            "status": "not found"
-        }
+        return jsonify({"status": "not found"}), 404
 
     hits = client.search(
         collection_name=collection,
         query_vector=result[0][0].vector,
         limit=limit+1)
 
-    return {
+    return jsonify({
         "hits": [hit.payload['file_name'] for hit in hits[-limit:]],
         "score": [hit.score for hit in hits[-limit:]],
-    }
+    }), 200
 
 
 @ai_api.route("/upsert", methods=["POST"])
@@ -123,7 +121,7 @@ def upsert():
                 payload=post_data['payload']
             )],
         )
-    return {"status": "OK"}
+    return jsonify({"status": "OK"}), 200
 
 
 @ai_api.route("/upsert_collection", methods=["POST"])
@@ -136,11 +134,13 @@ async def upsert_collection():
 
             # Check if the file has a name
             if file.filename == '':
-                return jsonify({'error': 'No selected file'})
+                return jsonify({'error': 'No selected file'}), 400
 
             # Check if the file is a JSON file
             if file.filename.endswith('.json'):
                 json_data = json.loads(file.read())
+            else:
+                return jsonify({'error': 'File format not supported, only JSON supported'}), 400
 
             try:  # as client returns raw string, we are treating it as try, except block
                 client.get_collection(collection)
@@ -152,15 +152,15 @@ async def upsert_collection():
 
             resp = uc.delay(json_data, collection, slices=50)
 
-            return {"id": resp.task_id}
+            return jsonify({"id": resp.task_id}), 200
 
     except Exception as e:
-        return jsonify({'error': str(e)})
+        return jsonify({'error': str(e)}), 500
 
 
 @ai_api.route("/collections", methods=["GET"])
 def get_collections():
-    return {"collections": [col.name for col in client.get_collections().collections]}
+    return jsonify({"collections": [col.name for col in client.get_collections().collections]}), 200
 
 
 @ai_api.route("/get_item", methods=["POST"])
