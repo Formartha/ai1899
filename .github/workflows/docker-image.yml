@@ -23,12 +23,12 @@ jobs:
 
       - name: Build the Docker image
         run: |
-          docker build . --file Dockerfile --tag formartha/ai1899:${{ steps.git_sha.outputs.sha }} --compress
+          docker build . --file Dockerfile --tag formartha/ai1899:${{ steps.git_sha.outputs.sha }} --tag formartha/ai1899:latest --compress
 
       - name: Log into Docker Hub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
       - name: Push Docker image to Docker Hub
         run: |
-          docker tag formartha/ai1899:${{ steps.git_sha.outputs.sha }} formartha/ai1899:latest
+          docker push formartha/ai1899:${{ steps.git_sha.outputs.sha }}
           docker push formartha/ai1899:latest
