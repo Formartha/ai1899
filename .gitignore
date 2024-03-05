@@ -20,3 +20,4 @@ ENV/
 
 # tmp
 tmp/
+.env
