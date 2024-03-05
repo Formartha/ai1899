@@ -162,7 +162,7 @@ async def upsert_collection():
 def check_task_status(task_id):
     if request.method == "GET":
         result = uc.AsyncResult(task_id)
-        return result.state  # This will return the state of the task as a string
+        return jsonify({"status": result.state}), 200  # This will return the state of the task as a string
     else:
         return jsonify({"error": "Method Not Allowed"}), 405
 
