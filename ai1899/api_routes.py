@@ -158,6 +158,15 @@ async def upsert_collection():
         return jsonify({'error': str(e)}), 500
 
 
+@ai_api.route('/check_upsert_status/<task_id>', methods=["GET"])
+def check_task_status(task_id):
+    if request.method == "GET":
+        result = uc.AsyncResult(task_id)
+        return result.state  # This will return the state of the task as a string
+    else:
+        return jsonify({"error": "Method Not Allowed"}), 405
+
+
 @ai_api.route("/collections", methods=["GET"])
 def get_collections():
     return jsonify({"collections": [col.name for col in client.get_collections().collections]}), 200

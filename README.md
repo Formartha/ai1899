@@ -1,5 +1,9 @@
 <img src=".readme/ai1899-cover.jpeg" alt="ai1899 cover" width="220">
 
+------
+
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/license/mit)
+
 What?
 ------
 ai1899 is a project designed for anyone seeking to utilize humanized queries for selecting test cases efficiently.
