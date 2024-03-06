@@ -255,14 +255,15 @@ async def upsert_collection():
     ---
     tags:
       - AI
-    consumes:
-      - multipart/form-data
     parameters:
       - name: file
+        in: formData
         required: true
         type: file
       - name: collection
         required: true
+        in: formData
+        type: string
     content:
       multipart/form-data:
         schema:
@@ -273,12 +274,12 @@ async def upsert_collection():
               in: formData
               description: The JSON file to be uploaded
             collection:
-              type: string
+              in: formData
+              type: formData
               description: The name of the collection
     responses:
       200:
         description: Returns task ID
-
     """
     try:
         # Check if a file is present in the request
