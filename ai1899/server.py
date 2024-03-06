@@ -15,8 +15,7 @@ app.config["SWAGGER"] = {
     "title": "ai1899 API",
     "uiversion": 3,
     "version": "1.0.0",
-    "description": "ai1899 restful api-docs interface",
-    "specs_route": "/"  # if a UI will be added down the road, this should be removed.
+    "description": "ai1899 restful api-docs interface"
 }
 
 swagger = Swagger(app)
