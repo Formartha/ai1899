@@ -23,6 +23,15 @@ To initiate the stack, execute the following command:
 -----------------------------------------------------
 DEVICE=/path/to/downloaded/model LM_MODEL=model-name docker compose up -d
 
+RestAPI:
+-------
+When you'll start the stack, you would be able to connect using both restful client (such as Postman),
+or if should you choose, use Swagger based rest calls.
+
+The address is http://{stackaddress}/apidocs
+
+<img src=".readme/swagger_example.jpg" alt="sawgger example" width="300">
+
 Troubleshoot
 ------------
 There is a known issue to install docker-compose on Mx processors (Mac), to fix it you should.
