@@ -1,6 +1,7 @@
 from flask import Blueprint
 from flask import request
 from flask import jsonify
+from flasgger import swag_from
 import json
 from qdrant_client.models import PointStruct, Distance, VectorParams
 from qdrant_client.http import models
@@ -11,39 +12,9 @@ from tasks import upsert_collection as uc
 ai_api = Blueprint('ai', __name__)
 
 
+@swag_from("swag/query.yaml")
 @ai_api.route("/query", methods=["POST"])
 def query():
-    """
-    This API is used to query the AI module and return proper response back
-    ---
-    tags:
-      - AI
-    parameters:
-      - name: body
-        in: body
-        required: true
-        schema:
-          type: object
-          required:
-            - query
-            - collection
-          properties:
-            query:
-              type: string
-              description: Query term
-              default: ""
-            collection:
-              type: string
-              description: Collection to query from
-              default: ""
-            limit:
-              type: integer
-              description: Amount of response back
-              default: 5
-    responses:
-      200:
-        description: A response of available resources
-    """
     post_data = request.json
     query_set = post_data["query"]
     query_collection = post_data.get("collection")
@@ -77,41 +48,9 @@ def query():
     }), 200
 
 
+@swag_from("swag/most_similar_by_id.yaml")
 @ai_api.route("/most_similar_by_id", methods=["POST"])
 def most_similar_by_id():
-    """
-    This API is used to return most similar vectors by ID
-    ---
-    tags:
-      - AI
-    parameters:
-      - name: body
-        in: body
-        required: true
-        schema:
-          type: object
-          required:
-            - _id
-            - collection
-          properties:
-            _id:
-              type: string
-              description: id of the vector
-              default: ""
-            collection:
-              type: string
-              description: collection to query from
-              default: ""
-            limit:
-              type: integer
-              description: amount of response back
-              default: 5
-    responses:
-      200:
-        description: A response of available resources
-      404:
-        description: Resource not found
-    """
     post_data = request.json
     collection = post_data.get("collection")
     _id = post_data.get('_id')
@@ -138,41 +77,9 @@ def most_similar_by_id():
     }), 200
 
 
+@swag_from("swag/most_similar_by_name.yaml")
 @ai_api.route("/most_similar_by_name", methods=["POST"])
 def most_similar_by_name():
-    """
-    This API is used to return most similar vectors by name
-    ---
-    tags:
-      - AI
-    parameters:
-      - name: body
-        in: body
-        required: true
-        schema:
-          type: object
-          required:
-            - name
-            - collection
-          properties:
-            name:
-              type: string
-              description: name of the item
-              default: ""
-            collection:
-              type: string
-              description: collection to query from
-              default: ""
-            limit:
-              type: integer
-              description: amount of response back
-              default: 5
-    responses:
-      200:
-        description: A response of available resources
-      404:
-        description: Name not found
-    """
     post_data = request.json
     collection = post_data.get("collection")
     name = post_data.get('name')
@@ -204,35 +111,9 @@ def most_similar_by_name():
     }), 200
 
 
+@swag_from("swag/upsert.yaml")
 @ai_api.route("/upsert", methods=["POST"])
 def upsert():
-    """
-    This API is used to upload a single item and push it to the QDRANT
-    ---
-    tags:
-      - AI
-    parameters:
-      - name: body
-        in: body
-        required: true
-        schema:
-          type: object
-          required:
-            - desc
-            - collection
-          properties:
-            desc:
-              type: object
-              description: Description of the item and the item name
-              default: ""
-            collection:
-              type: string
-              description: Collection to query from
-              default: ""
-    responses:
-      200:
-        description: Upsert collection succeeded
-    """
     post_data = request.json
     vector = model.encode(post_data['desc'])
     collection = post_data.get("collection")
@@ -248,39 +129,9 @@ def upsert():
     return jsonify({"status": "OK"}), 200
 
 
+@swag_from("swag/upsert_collection.yaml")
 @ai_api.route("/upsert_collection", methods=["POST"])
 async def upsert_collection():
-    """
-    Async upsert collection to QDRANT using remote Celery workers
-    ---
-    tags:
-      - AI
-    parameters:
-      - name: file
-        in: formData
-        required: true
-        type: file
-      - name: collection
-        required: true
-        in: formData
-        type: string
-    content:
-      multipart/form-data:
-        schema:
-          properties:
-            file:
-              type: file
-              format: binary
-              in: formData
-              description: The JSON file to be uploaded
-            collection:
-              in: formData
-              type: formData
-              description: The name of the collection
-    responses:
-      200:
-        description: Returns task ID
-    """
     try:
         # Check if a file is present in the request
         collection = request.form["collection"]
@@ -313,23 +164,9 @@ async def upsert_collection():
         return jsonify({'error': str(e)}), 500
 
 
+@swag_from("swag/check_upsert_status.yaml")
 @ai_api.route('/check_upsert_status/<task_id>', methods=["GET"])
 def check_task_status(task_id):
-    """
-    This API is used to return a task status based on ID
-    ---
-    tags:
-      - AI
-    parameters:
-      - name: task_id
-        in: path
-        required: true
-    responses:
-      200:
-        description: A response of available resources
-      405:
-        description: Method not allowed
-    """
     if request.method == "GET":
         result = uc.AsyncResult(task_id)
         return jsonify({"status": result.state}), 200  # This will return the state of the task as a string
@@ -337,51 +174,15 @@ def check_task_status(task_id):
         return jsonify({"error": "Method Not Allowed"}), 405
 
 
+@swag_from("swag/collections.yaml")
 @ai_api.route("/collections", methods=["GET"])
 def get_collections():
-    """
-    This API is used to return all the collections in QDRANT
-    ---
-    tags:
-      - AI
-    responses:
-      200:
-        description: A response of available resources
-    """
     return jsonify({"collections": [col.name for col in client.get_collections().collections]}), 200
 
 
+@swag_from("swag/get_item.yaml")
 @ai_api.route("/get_item", methods=["POST"])
 def get_item():
-    """
-    This api is used to upload single item and push it to the QDRANT
-    ---
-    tags:
-      - AI
-    parameters:
-      - name: body
-        in: body
-        required: true
-        schema:
-          type: object
-          required:
-            - item
-            - collection
-          properties:
-            item:
-              type: string
-              description: an item which to query
-              default: ""
-            collection:
-              type: string
-              description: collection to query from
-              default: ""
-    responses:
-      200:
-        description: return the id
-      404:
-        description: item not found
-    """
     post_data = request.json
     payload = post_data.get("item")
     collection = post_data.get("collection")
@@ -404,35 +205,9 @@ def get_item():
         return jsonify({"status": "No item found"}), 404
 
 
+@swag_from("swag/delete_item.yaml")
 @ai_api.route("/delete_item", methods=["POST"])
 def delete_item():
-    """
-    This api is used to delete an item or items from QDRANT
-    ---
-    tags:
-      - AI
-    parameters:
-      - name: body
-        in: body
-        required: true
-        schema:
-          type: object
-          required:
-            - item
-            - collection
-          properties:
-            items:
-              type: string
-              description: an item to delete. could be a string or a list
-              default: ""
-            collection:
-              type: string
-              description: collection to query from
-              default: ""
-    responses:
-      201:
-        description: operation completed
-    """
     post_data = request.json
     payload = post_data.get("items")
     collection = post_data.get("collection")

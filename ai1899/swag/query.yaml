@@ -1,0 +1,29 @@
+This API is used to query the AI module and return proper response back
+---
+tags:
+  - AI
+parameters:
+  - name: body
+    in: body
+    required: true
+    schema:
+      type: object
+      required:
+        - query
+        - collection
+      properties:
+        query:
+          type: string
+          description: Query term
+          default: ""
+        collection:
+          type: string
+          description: Collection to query from
+          default: ""
+        limit:
+          type: integer
+          description: Amount of response back
+          default: 5
+responses:
+  200:
+    description: A response of available resources

@@ -1,0 +1,31 @@
+This API is used to return most similar vectors by name
+---
+tags:
+  - AI
+parameters:
+  - name: body
+    in: body
+    required: true
+    schema:
+      type: object
+      required:
+        - name
+        - collection
+      properties:
+        name:
+          type: string
+          description: name of the item
+          default: ""
+        collection:
+          type: string
+          description: collection to query from
+          default: ""
+        limit:
+          type: integer
+          description: amount of response back
+          default: 5
+responses:
+  200:
+    description: A response of available resources
+  404:
+    description: Name not found

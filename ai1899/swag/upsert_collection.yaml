@@ -1,0 +1,7 @@
+This API is used to return all the collections in QDRANT
+---
+tags:
+  - AI
+responses:
+  200:
+    description: A response of available resources

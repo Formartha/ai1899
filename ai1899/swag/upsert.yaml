@@ -1,0 +1,25 @@
+This API is used to upload a single item and push it to the QDRANT
+---
+tags:
+  - AI
+parameters:
+  - name: body
+    in: body
+    required: true
+    schema:
+      type: object
+      required:
+        - desc
+        - collection
+      properties:
+        desc:
+          type: object
+          description: Description of the item and the item name
+          default: ""
+        collection:
+          type: string
+          description: Collection to query from
+          default: ""
+responses:
+  200:
+    description: Upsert collection succeeded

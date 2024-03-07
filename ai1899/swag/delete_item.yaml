@@ -1,0 +1,25 @@
+This api is used to delete an item or items from QDRANT
+---
+tags:
+  - AI
+parameters:
+  - name: body
+    in: body
+    required: true
+    schema:
+      type: object
+      required:
+        - item
+        - collection
+      properties:
+        items:
+          type: string
+          description: an item to delete. could be a string or a list
+          default: ""
+        collection:
+          type: string
+          description: collection to query from
+          default: ""
+responses:
+  201:
+    description: operation completed
