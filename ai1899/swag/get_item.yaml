@@ -1,4 +1,4 @@
-This api is used to upload single item and push it to the QDRANT
+This api is used to query single item from QDRANT
 ---
 tags:
   - AI

@@ -1,13 +1,7 @@
-This API is used to return a task status based on ID
+This API is used to return all the collections in QDRANT
 ---
 tags:
   - AI
-parameters:
-  - name: task_id
-    in: path
-    required: true
 responses:
   200:
     description: A response of available resources
-  405:
-    description: Method not allowed
