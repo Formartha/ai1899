@@ -32,6 +32,14 @@ The address is http://{stackaddress}/apidocs
 
 <img src=".readme/swagger_example.jpg" alt="sawgger example" width="300">
 
+Integration:
+------------
+To accelerate the addoption of ai1899, a plugin made for pytest was created.
+The url for the plugin is: https://github.com/Formartha/pytest-ai1899/tree/main
+
+The plugin allows a system to decide a query term, configure the ai1899 stack location,
+limit the amount of responses back and deselect tests (skip) which dosn't meet the query criteria.
+
 Troubleshoot
 ------------
 There is a known issue to install docker-compose on Mx processors (Mac), to fix it you should.
