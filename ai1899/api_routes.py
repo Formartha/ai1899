@@ -8,6 +8,7 @@ from qdrant_client.http import models
 
 from lm_module import client, model
 from tasks import upsert_collection as uc
+from tasks import celery as celery_app
 
 ai_api = Blueprint('ai', __name__)
 
@@ -164,11 +165,11 @@ async def upsert_collection():
         return jsonify({'error': str(e)}), 500
 
 
-@swag_from("swag/check_upsert_status.yaml")
-@ai_api.route('/check_upsert_status/<task_id>', methods=["GET"])
+@swag_from("swag/celery_status.yaml")
+@ai_api.route('/celery-status/<task_id>', methods=["GET"])
 def check_task_status(task_id):
     if request.method == "GET":
-        result = uc.AsyncResult(task_id)
+        result = celery_app.AsyncResult(task_id)
         return jsonify({"status": result.state}), 200  # This will return the state of the task as a string
     else:
         return jsonify({"error": "Method Not Allowed"}), 405
