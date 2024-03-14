@@ -21,7 +21,11 @@ You can use upsert api to ingest the vectors.
 
 To initiate the stack, execute the following command:
 -----------------------------------------------------
-DEVICE=/path/to/downloaded/model LM_MODEL=model-name docker compose up -d
+```DEVICE=/path/to/downloaded/model LM_MODEL=model-name docker compose -f docker-compose.yaml up -d```
+
+another option for debug could be taking the base of the docker-compose and appending the debug (attached as reference)
+
+```DEVICE=/path/to/downloaded/model LM_MODEL=model-name docker compose -f docker-compose.yaml -f docker-compose-debug.yaml up -d```
 
 RestAPI:
 -------

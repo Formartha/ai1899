@@ -1,0 +1,13 @@
+version: '3'
+services:
+# this needs to be enabled when https://github.com/qdrant/qdrant-web-ui/issues/94 is solved
+#  qdrant-container:
+#    ports:
+#      - "6333:6333"
+  ai:
+    ports:
+      - "5555:5555"
+
+  redis-commander:
+    ports:
+      - "6379:6379"
