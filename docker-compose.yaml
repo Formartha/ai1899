@@ -45,6 +45,8 @@ services:
         limits:
           cpus: "0.5" # Recommended: 4 CPUs
           memory: 500M # Recommended: 4GB RAM
+    volumes:
+      - redis_data:/data
 
   redis-commander:
     image: "rediscommander/redis-commander:latest"
@@ -108,3 +110,5 @@ volumes:
       type: none
       device: ${DEVICE} # /path/to/your/model
       o: bind
+  redis_data:
+    external: false
