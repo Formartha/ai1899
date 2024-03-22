@@ -49,7 +49,7 @@ Example for creating the collection to query from:
 An example of creating a collection can be found <a href="ai1899/examples/collection_a_example.json">here</a>
 In the example, you will find a dictonary with ```{"test_name": "and the test description"}```, this will allow generating a proper vector based on the NLP model which is being used in the AI stack.
 
-By creating this collection, you will be able to uload it to ai1899 using either swagger or via direct call:
+By uploading this collection and giving it the name ```Tests1```, you will be able to upload it to ai1899 using either swagger or via direct call:
 
 ```
 import requests
@@ -66,6 +66,8 @@ response = requests.request("POST", url, headers=headers, data=payload, files=fi
 
 print(response.text)
 ```
+
+After the upload, the ai1899 will return back an ID which will be usable to trace the status of creating vectors and pushing it to QDRANT. Note: this process might take time as it's being running as an async call and handled by the celery worker which will ingest the data using the same model which was used to start the ai1899 stack.
 
 Troubleshoot
 ------------
