@@ -44,6 +44,29 @@ The url for the plugin is: https://github.com/Formartha/pytest-ai1899/tree/main
 The plugin allows a system to decide a query term, configure the ai1899 stack location,
 limit the amount of responses back and deselect tests (skip) which dosn't meet the query criteria.
 
+Example for creating the collection to query from:
+---------------------------------------------------
+An example of creating a collection can be found <a href="ai1899/examples/collection_a_example.json">here</a>
+In the example, you will find a dictonary with ```{"test_name": "and the test description"}```, this will allow generating a proper vector based on the NLP model which is being used in the AI stack.
+
+By creating this collection, you will be able to uload it to ai1899 using either swagger or via direct call:
+
+```
+import requests
+
+url = "http://127.0.0.1/ai/upsert_collection"
+
+payload = {'collection': 'Tests1'}
+files=[
+  ('file',('collection_a_example.json',open('collection_a_example.json','rb'),'application/json'))
+]
+headers = {}
+
+response = requests.request("POST", url, headers=headers, data=payload, files=files)
+
+print(response.text)
+```
+
 Troubleshoot
 ------------
 There is a known issue to install docker-compose on Mx processors (Mac), to fix it you should.
