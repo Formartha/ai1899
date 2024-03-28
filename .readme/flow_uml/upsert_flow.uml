@@ -1,0 +1,37 @@
+@startuml
+
+start
+
+:upsert collection (include collection) based on JSON;
+
+note right
+request
+{
+"test_1": "test 2 description",
+"test_2": "test 2 description",
+...
+}
+end note
+
+:Server ai1899 receives request;
+
+note left
+response:
+{
+"request_id": "xyz"
+}
+end note
+
+:Trigger async event to Redis message bus;
+
+:Celery worker picks up Redis event;
+
+:NLP module processes request data;
+
+:Insert data to QDRANT vector database;
+
+:Notify Redis topic that task is completed;
+
+stop
+
+@enduml

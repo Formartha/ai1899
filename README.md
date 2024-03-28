@@ -13,6 +13,16 @@ Consequently, users can query the system via Flask APIs to retrieve test cases t
 The project employs models that can be selected and downloaded offline from Hugging Face's repository: https://huggingface.co.
 During development, the primary model utilized was msmarco-distilbert-base-tas-b, accessible here: https://huggingface.co/sentence-transformers/msmarco-distilbert-base-tas-b
 
+Call flow:
+----------
+Adding the tests called "upsert", this is the call flow describing it:
+
+<img src=".readme/flow_uml/upsert_flow.png" alt="ai1899 cover" width="220">
+
+The query flow is as the following:
+
+<img src=".readme/flow_uml/query_flow.png" alt="ai1899 cover" width="220">
+
 How to run?
 ----------
 To enhance performance and minimize footprint,

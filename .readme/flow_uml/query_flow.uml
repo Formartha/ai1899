@@ -1,0 +1,33 @@
+@startuml
+
+start
+
+:upsert collection (include collection) based on JSON;
+
+note right
+request
+{
+"query": "a new test with a new data"
+"collection": "xyz"
+}
+end note
+
+:Server ai1899 receives request;
+
+:Server generate vector for the query based on the NLP model;
+
+:Query data from QDRANT vector database;
+
+:Response to the user with the proper tests;
+
+stop
+
+note right
+response
+{
+"items": ["test1", "test2", "test20"]
+"hits: [0.81, 0.79, 0.63]
+}
+end note
+
+@enduml
