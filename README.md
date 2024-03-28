@@ -17,11 +17,11 @@ Call flow:
 ----------
 Adding the tests called "upsert", this is the call flow describing it:
 
-<img src=".readme/flow_uml/upsert_flow.png" alt="ai1899 cover" width="220">
+<img src=".readme/flow_uml/upsert_flow.png" alt="ai1899 upsert" width="350">
 
 The query flow is as the following:
 
-<img src=".readme/flow_uml/query_flow.png" alt="ai1899 cover" width="220">
+<img src=".readme/flow_uml/query_flow.png" alt="ai1899 query" width="350">
 
 How to run?
 ----------
