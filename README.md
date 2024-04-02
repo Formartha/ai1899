@@ -48,7 +48,7 @@ The address is http://{stackaddress}/apidocs
 
 Integration:
 ------------
-To accelerate the addoption of ai1899, a plugin made for pytest was created.
+To accelerate the adoption of ai1899, a plugin made for pytest was created.
 The url for the plugin is: https://github.com/Formartha/pytest-ai1899/tree/main
 
 The plugin allows a system to decide a query term, configure the ai1899 stack location,
@@ -77,7 +77,38 @@ response = requests.request("POST", url, headers=headers, data=payload, files=fi
 print(response.text)
 ```
 
-After the upload, the ai1899 will return back an ID which will be usable to trace the status of creating vectors and pushing it to QDRANT. Note: this process might take time as it's being running as an async call and handled by the celery worker which will ingest the data using the same model which was used to start the ai1899 stack.
+After the upload, the ai1899 will return an ID which will be usable to trace the status of creating vectors and pushing it to QDRANT. Note: this process might take time as it's being running as an async call and handled by the celery worker which will ingest the data using the same model which was used to start the ai1899 stack.
+
+FAQ:
+----
+**Question:**
+
+What size models did you test this on? What are the minimum hardware requirements?
+
+**Answer:**
+
+The model tested is not particularly relevant (broadly speaking) since all it does is generate vectors - there is no training involved as the goal is ultimately to find the cosine similarity.
+
+The hardware requirements were not specifically tested - you can examine them yourself, but broadly speaking what is currently shown in the docker-compose file represents the minimum needed to run the stack.
+
+while develiping the project, the distilbert-base-uncased was used, which worked well enough to test the use case and build the infrastructure. Since the platform is flexible enough, you can load whichever model you want (not at runtime, but at deploy time) and use it.
+
+
+**Question:**
+
+What is the main difference between storing the data in Elastic or a similar database? Is it the ability to use natural language?
+
+**Answer:**
+
+Broadly speaking, the model generates a vector based on each of the input strings (according to the tokenizer).
+
+This vector needs to be stored somewhere, in this case it is stored in a Vector Database called QDRANT (not Elastic).
+
+At query time to the AI, the query goes through the same vector generation process and using the QDRANT client, it retrieves the relevant information from it. Depending on the implementation, n possible matches are returned, with the ability to limit the number of responses (currently set to 5).
+So if you have a catalog of 5,000 tests, each with a description, you can use a natural language query to get the tests most similar to what you want to check, in descending order of relevance.
+
+Additionally, the model's accuracy (hits) is returned, allowing you to assess whether the chosen model is suitable for use and whether there is a need to improve the test descriptions.
+The main difference compared to using a traditional database like Elastic is the ability to query based on semantic similarity using natural language, rather than just lexical matching of keywords.
 
 Troubleshoot
 ------------
