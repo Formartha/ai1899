@@ -2,7 +2,8 @@
 
 ------
 
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/license/mit)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/Formartha/ai1899/blob/main/LICENSE.txt)
+![Docker pull](https://img.shields.io/docker/pulls/formartha/ai1899)
 
 What?
 ------
